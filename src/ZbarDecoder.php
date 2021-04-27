@@ -8,7 +8,6 @@ use RobbieP\ZbarQrdecoder\Result\Parser\ParserXML;
 use RobbieP\ZbarQrdecoder\Result\ResultCollection;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 
 class ZbarDecoder
 {
@@ -31,12 +30,12 @@ class ZbarDecoder
      * @param Process $process
      * @throws \Exception
      */
-    public function __construct(array $config = [], Process $process = null)
+    public function __construct(array $config = [])
     {
+        //TODO: get path from default config
         if (isset($config['path'])) {
             $this->setPath($config['path']);
         }
-        $this->process = null === $process ? new Process($this->getPath()) : $process;
     }
 
     /**
@@ -60,8 +59,8 @@ class ZbarDecoder
      * Returns the path to the executable zbarimg
      * Defaults to /usr/bin
      *
-     * @throws \Exception
      * @return mixed
+     * @throws \Exception
      */
     public function getPath()
     {
@@ -110,14 +109,13 @@ class ZbarDecoder
     private function buildProcess()
     {
         $path = $this->getPath();
-        $this->process->setCommandLine([
+        $this->process = new Process([
             $path . DIRECTORY_SEPARATOR . static::EXECUTABLE,
             '-D',
             '--xml',
             '-q',
             $this->getFilePath()
-        ])->enableOutput();
-
+        ]);
     }
 
     /**
